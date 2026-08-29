@@ -1,0 +1,21 @@
+name: Sync upstream
+on:
+  schedule:
+    - cron: "17 4 * * *"   # tous les jours 04:17 UTC
+  workflow_dispatch: {}
+permissions:
+  contents: write
+jobs:
+  mirror:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Mirror la branche par défaut d'upstream vers la branche `upstream`
+        run: |
+          set -euo pipefail
+          git init -q repo && cd repo
+          git remote add upstream https://github.com/Open3CL/engine.git
+          git remote add origin  https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
+          git fetch --prune --tags upstream
+          DEFAULT=$(git remote show upstream | sed -n 's/.*HEAD branch: //p')
+          git push -f origin "refs/remotes/upstream/${DEFAULT}:refs/heads/upstream"
+          git push -f --tags origin
