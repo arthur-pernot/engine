@@ -10,11 +10,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Mirror la branche par défaut d'upstream vers la branche `upstream`
+        env:
+          SYNC_PAT: ${{ secrets.SYNC_PAT }}
+          REPO: ${{ github.repository }}
         run: |
           set -euo pipefail
           git init -q repo && cd repo
           git remote add upstream https://github.com/Open3CL/engine.git
-          git remote add origin  https://x-access-token:${{ secrets.SYNC_PAT }}@github.com/${{ github.repository }}.git
+          git remote add origin "https://x-access-token:${SYNC_PAT}@github.com/${REPO}.git"
           git fetch --prune --tags upstream
           DEFAULT=$(git remote show upstream | sed -n 's/.*HEAD branch: //p')
           git push -f origin "refs/remotes/upstream/${DEFAULT}:refs/heads/upstream"
