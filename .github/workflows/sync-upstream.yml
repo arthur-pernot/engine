@@ -13,6 +13,7 @@ jobs:
         env:
           SYNC_PAT: ${{ secrets.SYNC_PAT }}
           REPO: ${{ github.repository }}
+          GIT_TERMINAL_PROMPT: "0"
         run: |
           set -euo pipefail
           git init -q repo && cd repo
