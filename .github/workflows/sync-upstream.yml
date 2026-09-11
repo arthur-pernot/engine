@@ -17,7 +17,9 @@ jobs:
           set -euo pipefail
           git init -q repo && cd repo
           git remote add upstream https://github.com/Open3CL/engine.git
-          git remote add origin "https://x-access-token:${SYNC_PAT}@github.com/${REPO}.git"
+          git remote add origin "https://github.com/${REPO}.git"
+          AUTH=$(printf '%s' "x-access-token:${SYNC_PAT}" | tr -d '\n\r' | base64 -w0)
+          git config http.extraheader "Authorization: basic ${AUTH}"
           git fetch --prune --tags upstream
           DEFAULT=$(git remote show upstream | sed -n 's/.*HEAD branch: //p')
           git push -f origin "refs/remotes/upstream/${DEFAULT}:refs/heads/upstream"
